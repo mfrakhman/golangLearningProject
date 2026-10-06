@@ -4,9 +4,23 @@ import (
 	"bufio"
 	"fmt"
 	"miniProject/note"
+	"miniProject/todo"
 	"os"
 	"strings"
 )
+
+type saver interface {
+	Save() error
+}
+
+//type displayer interface {
+//	Display()
+//}
+
+type outputable interface {
+	saver
+	Display()
+}
 
 func main() {
 	fmt.Println("Welcome to Go!")
@@ -15,14 +29,41 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	userNote.DisplayNote()
-	err = userNote.Save()
+
+	todoText := getUserInput("Todo Text:")
+	userTodo, err := todo.New(todoText)
 	if err != nil {
-		fmt.Println(err, "failed to save note")
-		return
+		fmt.Println(err)
 	}
-	fmt.Println("Note saved successfully!")
-	//fmt.Println(userNote.Title, userNote.Content)
+
+	//userNote.DisplayNote()
+	//err = saveData(userNote)
+	err = outputData(userNote)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//userTodo.Display()
+	//err = saveData(userTodo)
+	err = outputData(userTodo)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func saveData(data saver) error {
+	err := data.Save()
+	if err != nil {
+		fmt.Println("saving failed:", err)
+		return err
+	}
+	fmt.Println("saved successfully")
+	return nil
+}
+
+func outputData(data outputable) error {
+	data.Display()
+	return saveData(data)
 }
 
 func getNoteData() (string, string) {
