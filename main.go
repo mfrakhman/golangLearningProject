@@ -6,6 +6,7 @@ import (
 	"miniProject/note"
 	"miniProject/todo"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -13,16 +14,18 @@ type saver interface {
 	Save() error
 }
 
-//type displayer interface {
-//	Display()
-//}
-
+//	type displayer interface {
+//		Display()
+//	}
 type outputable interface {
 	saver
 	Display()
 }
 
 func main() {
+	printSomething(1)
+	printSomething(1.4)
+	printSomething("hello world")
 	fmt.Println("Welcome to Go!")
 	title, content := getNoteData()
 	userNote, err := note.New(title, content)
@@ -48,6 +51,37 @@ func main() {
 	err = outputData(userTodo)
 	if err != nil {
 		fmt.Println(err)
+	}
+
+	printSomething(userNote)
+}
+
+func printSomething(value interface{}) {
+	intVal, ok := value.(int)
+	if ok {
+		fmt.Println(intVal)
+		return
+	}
+	floatVal, ok := value.(float64)
+	if ok {
+		fmt.Println(floatVal)
+		return
+	}
+	stringVal, ok := value.(string)
+	if ok {
+		fmt.Println(stringVal)
+		return
+	}
+
+	switch value.(type) {
+	case int:
+		fmt.Println("integer: ", value)
+	case float64:
+		fmt.Println("float: ", value)
+	case string:
+		fmt.Println("string: ", value)
+	default:
+		fmt.Println("unknown type: ", reflect.TypeOf(value))
 	}
 }
 
